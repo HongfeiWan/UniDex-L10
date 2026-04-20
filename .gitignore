@@ -1,4 +1,5 @@
 .DS_Store
+.venv/
 
 **.egg-info
 outputs/
@@ -18,3 +19,4 @@ dataset_annotations/
 manopth/
 sam2/
 WiLoR/
+
