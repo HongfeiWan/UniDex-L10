@@ -54,9 +54,9 @@ flowchart TD
     F --> F1[Proprio Tokens]
 
     G[Ground-truth Future Action Chunk x_1<br/>shape: H x 82] --> H[Sample Gaussian Noise x_0<br/>same shape: H x 82]
-    H --> I[Sample time t in [0, 1]]
+    H --> I[Sample time t from 0 to 1]
     G --> I
-    I --> J[Construct Noisy Action Chunk x_t<br/>x_t = interpolation x_0, x_1, t]
+    I --> J[Construct Noisy Action Chunk x_t<br/>interpolate x_0 and x_1 with t]
 
     J --> K[Action Encoder<br/>Noisy action tokens]
     I --> K1[Time Embedding]
@@ -69,7 +69,7 @@ flowchart TD
 
     L --> M[Action Expert Hidden States]
     M --> N[Action Decoder / Linear Head]
-    N --> O[Predicted Vector Field v_theta<br/>shape: H × 82]
+    N --> O[Predicted Vector Field v_theta<br/>shape: H x 82]
 
     G --> P[Target Vector Field<br/>u_t = x_1 - noise term]
     H --> P
@@ -108,7 +108,7 @@ flowchart TD
     W --> X[Action Decoder]
     X --> Y[Predicted Vector Field v_theta]
 
-    Y --> Z[Euler Update<br/>x_{k+1} = x_k + Δt · v_theta]
+    Y --> Z[Euler Update<br/>x(k+1) = x(k) + dt * v_theta]
     Z --> S
 
     Z --> AA[After N steps:<br/>Denoised Action Chunk x_N]
@@ -149,7 +149,7 @@ flowchart TD
     B --> C[Right Wrist Pose Delta]
     B --> D[Right Hand FAAS Joint Slots]
     C --> E[6-DoF Arm Controller<br/>IK / Cartesian Servo]
-    D --> F[L10 FAAS Adapter<br/>82D → 10 active joints]
+    D --> F[L10 FAAS Adapter<br/>82D -> 10 active joints]
     E --> G[Robot Arm Motion]
     F --> H[L10 Finger Motion]
 ```
