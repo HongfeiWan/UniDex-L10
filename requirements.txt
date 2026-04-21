@@ -10,7 +10,8 @@ numpy==1.26.4
 open3d
 opencv-python
 omegaconf
-pybullet
+pybullet-arm64; platform_system == "Darwin" and platform_machine == "arm64"
+pybullet; not (platform_system == "Darwin" and platform_machine == "arm64")
 pyyaml
 scipy
 timm
