@@ -53,10 +53,10 @@ flowchart TD
     E[Current Proprioception s_t<br/>wrist pose + hand joint state<br/>FAAS-like 82D] --> F[Proprio Encoder<br/>Linear / MLP]
     F --> F1[Proprio Tokens]
 
-    G[Ground-truth Future Action Chunk x_1<br/>shape: H x 82] --> H[Sample Gaussian Noise x_0<br/>same shape: H x 82]
-    H --> I[Sample time t from 0 to 1]
+    G[Ground-truth Future Action Chunk<br/>shape H x 82] --> H[Sample Gaussian Noise<br/>same shape H x 82]
+    H --> I[Sample diffusion time]
     G --> I
-    I --> J[Construct Noisy Action Chunk x_t<br/>interpolate x_0 and x_1 with t]
+    I --> J[Construct Noisy Action Chunk<br/>interpolate clean action and noise]
 
     J --> K[Action Encoder<br/>Noisy action tokens]
     I --> K1[Time Embedding]
@@ -69,12 +69,12 @@ flowchart TD
 
     L --> M[Action Expert Hidden States]
     M --> N[Action Decoder / Linear Head]
-    N --> O[Predicted Vector Field v_theta<br/>shape: H x 82]
+    N --> O[Predicted Vector Field<br/>shape H x 82]
 
-    G --> P[Target Vector Field<br/>u_t = x_1 - noise term]
+    G --> P[Target Vector Field<br/>denoising direction]
     H --> P
 
-    O --> Q[Flow-Matching Loss<br/>MSE v_theta, u_t]
+    O --> Q[Flow-Matching Loss<br/>match predicted and target field]
     P --> Q
 ```
 
@@ -93,10 +93,10 @@ flowchart TD
     E[Current Proprioception s_t<br/>current wrist + hand state] --> F[Proprio Encoder]
     F --> F1[Proprio Tokens]
 
-    R[Sample Initial Gaussian Action Chunk x_0<br/>shape: H x 82] --> S[Current Action Chunk x_k]
+    R[Sample Initial Gaussian Action Chunk<br/>shape H x 82] --> S[Current Action Chunk]
 
     S --> T[Action Encoder]
-    U[Current Euler Time t_k] --> U1[Time Embedding]
+    U[Current Euler Step] --> U1[Time Embedding]
     U1 --> T
 
     B1 --> V[Joint Transformer / Mixture Backbone]
@@ -106,12 +106,12 @@ flowchart TD
 
     V --> W[Action Expert Hidden States]
     W --> X[Action Decoder]
-    X --> Y[Predicted Vector Field v_theta]
+    X --> Y[Predicted Vector Field]
 
-    Y --> Z[Euler Update<br/>x(k+1) = x(k) + dt * v_theta]
+    Y --> Z[Euler Update<br/>advance action chunk one step]
     Z --> S
 
-    Z --> AA[After N steps:<br/>Denoised Action Chunk x_N]
+    Z --> AA[After N steps<br/>Denoised Action Chunk]
     AA --> AB[FAAS Action Chunk<br/>H x 82]
     AB --> AC[Take first action / first few actions]
     AC --> AD[FAAS-to-Robot Adapter]
