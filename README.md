@@ -154,5 +154,45 @@ flowchart TD
     F --> H[L10 Finger Motion]
 ```
 
+外层控制循环 + 内层 30 步 Euler
+
+```mermaid
+flowchart TD
+    subgraph OuterLoop[Outer Control Loop]
+        O1[Get current observation<br/>pointcloud, language, proprioception]
+        O2[Run policy once<br/>generate one action chunk]
+        O3[Execute first action<br/>or first few actions]
+        O4[Environment updates<br/>robot and object state change]
+        O5[Get next observation]
+
+        O1 --> O2
+        O2 --> O3
+        O3 --> O4
+        O4 --> O5
+        O5 --> O1
+    end
+
+    subgraph InnerLoop[Inner Euler Denoising Loop]
+        I1[Start from Gaussian noise<br/>initial action chunk]
+        I2[Set current Euler step]
+        I3[Encode noisy action chunk<br/>with time embedding]
+        I4[Joint transformer predicts<br/>vector field]
+        I5[Apply one Euler update]
+        I6[Repeat until 30 steps]
+        I7[Output denoised action chunk]
+
+        I1 --> I2
+        I2 --> I3
+        I3 --> I4
+        I4 --> I5
+        I5 --> I6
+        I6 --> I2
+        I6 --> I7
+    end
+
+    O2 -. calls .-> I1
+    I7 -. returns action chunk .-> O3
+```
+
 
 
